@@ -1,0 +1,145 @@
+swagger:  "2.0"
+info:
+  title:  "Web Based Content Market Place"
+host: "localhost:8000"
+
+tags:
+- name: "Order"
+  description:  "Where client can place his orders"
+
+schemes:
+- "http"
+- "https"
+
+paths:
+  /order/api/get-masterData:
+    get:
+      tags:
+      - "Order"
+      summary:  "Get data from the master table"
+      description:  ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      responses:
+        "200":
+          description:  "successful operation"
+        "500":
+          description:  "Internal server Error"
+
+  /order/api/create-order:
+    post:
+      tags:
+      - "Order"
+      summary:  "Create order"
+      description:  ""
+      consumes:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - in: "body"
+        name: "body"
+        description:  "Order object"
+        required: true
+        schema:
+          $ref: "#/definitions/createOrder"
+      responses:
+        "200":
+          description:  "Successful operation"
+        "209":
+          description:  "Conflict"
+
+  /order/api/get-orders/{orderId}:
+    get:
+      tags:
+      - "Order"
+      summary:  "Get the order details based on order id"
+      description:  ""
+      # operationId:  "getOrder"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "orderId"
+        in: "path"
+        description:  "Id of the order whose data needs to be fetched"
+        required: true
+      responses:
+        "200":
+          description:  "successful operation"
+        "400":
+          description:  "Bad Request"
+        "500":
+          description:  "Internal Server Error"
+securityDefinitions:
+  api_key:
+    type: apiKey
+    in: header
+    Format: Bearer token
+    name: authorization
+definitions:
+  createOrder:
+    type: "object"
+    properties:
+      project_order_id:
+        type: "integer"
+      order_type_id:
+        type: "integer"
+      project_name:
+        type: "string"
+      industry_id:
+        type: "integer"
+      articles:
+        type: "array"
+        items:
+          type: "object"
+          properties:
+            title:
+              type: "string"
+            order_content_type_id:
+              type: "integer"
+            content_creator_id:
+              type: "integer"
+            keywords:
+              type: "string"
+            words_id:
+              type: "integer"
+            images_id:
+              type: "integer"
+            additional_comments:
+              type: "string"
+      user_id:
+        type: "integer"
+      project_goal_id:
+        type: "integer"
+      custom_project_goal:
+        type: "string"
+      point_of_view_id:
+        type: "integer"
+      voice_tone_id:
+        type: "integer"
+      custom_voice:
+        type: "string"
+      structure_preference_id:
+        type: "integer"
+      custom_structure_preference:
+        type: "string"
+      dos:
+        type: "string"
+      donts:
+        type: "string"
+      reference_links:
+        type: "string"
+      tell_about_readers:
+        type: "string"
+      guidelines:
+        type: "string"
+      meta_description:
+        type: "string"
+    xml:
+      name: "createOrder"
+    
+
+
+
+      
+      
