@@ -1,0 +1,80 @@
+swagger: "2.0"
+info:
+  title: "Cosmonet API's"
+  description: "Swagger documentaion for the api's "
+  version: 1.0
+
+tags:
+  - name: "Auth"
+    description: "Where users logs in"
+
+    # servers :
+    #   -url : "http://localhost:3000"
+    #   description: this is the local server
+    #   -url : "http://localhost:4000"
+    #   description: this is the front end server / production server
+
+schemas:
+  - "http"
+  - "https"
+
+paths:
+  /api/signup:
+    post:
+      tags:
+        - "Auth"
+      summary: "use this to signup the new user"
+      description: ""
+      consumes:
+        - "application/json"
+        - "application/xml"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "user object"
+          required: true
+          schema:
+            $ref: "#/definitions/userSignup"
+      responses:
+        "200":
+          description: "Successful operation"
+        "400":
+          description: Error
+        "500":
+          description: Internal Server Error
+  /api/login:
+    post:
+      summary: "login api"
+      description: "use the email and password to login "
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "user object"
+          schema:
+            $ref: "#/definitions/userLogin"
+      responses:
+        "200":
+          description: Logged in Successfully
+        "400":
+          description: Error
+        "500":
+          description: Internal server error
+# securityDefinitions:
+definitions:
+  userSignup:
+    type: "object"
+    properties:
+      fullName:
+        type: "string"
+      email:
+        type: "string"
+      phoneNumber:
+        type: "integer"
+      password:
+        type: "string"
+      xml:
+        name: "userSignup"

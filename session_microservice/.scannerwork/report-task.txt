@@ -1,0 +1,6 @@
+projectKey=WBCMP1
+serverUrl=http://localhost:9000
+serverVersion=8.9.10.61524
+dashboardUrl=http://localhost:9000/dashboard?id=WBCMP1
+ceTaskId=AYadWQSimq1mYcwZu7cY
+ceTaskUrl=http://localhost:9000/api/ce/task?id=AYadWQSimq1mYcwZu7cY
