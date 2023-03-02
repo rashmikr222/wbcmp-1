@@ -19,7 +19,9 @@ const CONSTANT_VARIABLES = {
     "AUTH0_DOMAIN": process.env.AUTH0_DOMAIN,
     "AUTH0_CLIENTID": process.env.AUTH0_CLIENTID,
     "AUTH0_CLIENTSECRET": process.env.AUTH0_CLIENTSECRET,
-    "CONNECTION": process.env.CONNECTION
+    "CONNECTION": process.env.CONNECTION,
+    "ROLE_DOMAIN": process.env.ROLE_DOMAIN,
+    "FORGOT_PASSWORD_URL": process.env.FORGOT_PASSWORD_URL
 }
 
 module.exports = { CONSTANT_VARIABLES }

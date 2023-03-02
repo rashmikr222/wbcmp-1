@@ -44,6 +44,8 @@ paths:
           description: Internal Server Error
   /api/login:
     post:
+      tags:
+        - "Auth"
       summary: "login api"
       description: "use the email and password to login "
       produces:
@@ -53,16 +55,40 @@ paths:
       parameters:
         - in: "body"
           name: "body"
-          description: "user object"
+          description: "user login object"
           schema:
             $ref: "#/definitions/userLogin"
       responses:
         "200":
-          description: Logged in Successfully
+          description: "Logged in Successfully"
         "400":
-          description: Error
+          description: "Error"
         "500":
-          description: Internal server error
+          description: "Internal server error"
+
+  /api/forgotPassword:
+    post:
+      tags:
+        - "Auth"
+      summary: "Forgot password api"
+      description: "Enter your registered email to get the password reset link"
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "forgot password object"
+          schema:
+            $ref: "#/definitions/userForgotPassword"
+      responses:
+        "200":
+          description: "Forgot password link sent to entered email"
+        "404":
+          description: "user not found"
+        "500":
+          description: "Internal server error"
 # securityDefinitions:
 definitions:
   userSignup:
@@ -76,5 +102,23 @@ definitions:
         type: "integer"
       password:
         type: "string"
-      xml:
-        name: "userSignup"
+    xml:
+      name: "userSignup"
+
+  userLogin:
+    type: "object"
+    properties:
+      email:
+        type: "string"
+      password:
+        type: "string"
+    xml:
+      name: "userLogin"
+
+  userForgotPassword:
+    type: "object"
+    properties:
+      email:
+        type: "string"
+    xml:
+      name: "userForgotPassword"

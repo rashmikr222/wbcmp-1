@@ -5,6 +5,7 @@ const { queryExecutor, SQLQUERYSTRING } = require('../utils/common')
 const { CONSTANT_VARIABLES } = require('../config/config')
 var request = require("request");
 
+console.log("==", CONSTANT_VARIABLES.AUTH0_DOMAIN, CONSTANT_VARIABLES.AUTH0_CLIENTSECRET, CONSTANT_VARIABLES.AUTH0_CLIENTID)
 
 var AuthenticationClient = require('auth0').AuthenticationClient
 
@@ -16,83 +17,106 @@ var management = new ManagementClient({
     domain: "dev-egjru2hga63r6c55.us.auth0.com"
 });
 var auth0 = new AuthenticationClient({
-    domain: "dev-egjru2hga63r6c55.us.auth0.com",
-    clientId: "6Mz5dqxyCOKSWe0Y1nfir81k7i62xNku",
-    clientSecret: "pG52cFmh1f0YPh2zie_McNotmG8QhmOKKLPfe8FmZyM7hBZkBl5oQIq4TJ5GGU_P"
+    domain: CONSTANT_VARIABLES.AUTH0_DOMAIN,
+    clientId: CONSTANT_VARIABLES.AUTH0_CLIENTID,
+    clientSecret: CONSTANT_VARIABLES.AUTH0_CLIENTSECRET
 })
 
 // ---------------------------------------------------------------------------------
 const userSignup = async (req, res, next) => {
+
+
+    const { fullName, email, phoneNumber, password } = req.body
+    console.log("🚀 ~ file: auth_controller.js:29 ~ userSignup ~ fullName, email, phoneNumber, password:", fullName, email, phoneNumber, password)
+
+    var data = {
+        client_id: CONSTANT_VARIABLES.AUTH0_CLIENTID,
+        fullName: fullName,
+        email: email,
+        phoneNumber: phoneNumber,
+        password: password,
+        // connection: "Username-Password-Authentication",
+        connection: CONSTANT_VARIABLES.CONNECTION,
+    }
+    //     auth0.database.signUp(
+    //         data, async (err, userData) => {
+    //         if (err) {
+    //             console.log("🚀 ~ file: auth_controller.js:48 ~ auth0.database.signUp ~ err:", err)
+    //             return res.status(400).send({
+    //                 data: JSON.parse(err.message),
+    //                 message: "Please verify the email or User already exist!"
+    //             })
+    //         }
+    //         console.log("🚀 ~ file: auth_controller.js:41 ~ auth0.database.signUp ~ userData:", userData)
+    //         // insert to our database
+    //         const sqlInsert = `INSERT INTO user_info (fullName,email,phoneNumber,isEmailVerified) VALUES (
+    // '${fullName}','${email}',${phoneNumber},'false')`
+
+    //         const userInsertResp = await queryExecutor(sqlInsert)
+
+    //         return res.status(201).send({
+    //             message: "An email sent to you.Please verify the email!",
+    //             data: userData
+    //         })
+    //     })
+
+
     try {
 
-        const { fullName, email, phoneNumber, password } = req.body
-        console.log("🚀 ~ file: auth_controller.js:29 ~ userSignup ~ fullName, email, phoneNumber, password:", fullName, email, phoneNumber, password)
-
-        var data = {
-            client_id: "6Mz5dqxyCOKSWe0Y1nfir81k7i62xNku",
-            fullName: fullName,
-            email: email,
-            phoneNumber: phoneNumber,
-            password: password,
-            // connection: "Username-Password-Authentication",
-            connection: "testdb",
-        }
-        //     auth0.database.signUp(
-        //         data, async (err, userData) => {
-        //         if (err) {
-        //             console.log("🚀 ~ file: auth_controller.js:48 ~ auth0.database.signUp ~ err:", err)
-        //             return res.status(400).send({
-        //                 data: JSON.parse(err.message),
-        //                 message: "Please verify the email or User already exist!"
-        //             })
-        //         }
-        //         console.log("🚀 ~ file: auth_controller.js:41 ~ auth0.database.signUp ~ userData:", userData)
-        //         // insert to our database
-        //         const sqlInsert = `INSERT INTO user_info (fullName,email,phoneNumber,isEmailVerified) VALUES (
-        // '${fullName}','${email}',${phoneNumber},'false')`
-
-        //         const userInsertResp = await queryExecutor(sqlInsert)
-
-        //         return res.status(201).send({
-        //             message: "An email sent to you.Please verify the email!",
-        //             data: userData
-        //         })
-        //     })
-
-        const userData = await auth0.database.signUp(data)
-
-        console.log("🚀 ~ file: auth_controller.js:41 ~ auth0.database.signUp ~ userData:", userData)
         // insert to our database
         const sqlInsert = `INSERT INTO user_info (fullName,email,phoneNumber,isEmailVerified) VALUES ('${fullName}','${email}',${phoneNumber},'false')`
-
         const userInsertResp = await queryExecutor(sqlInsert)
 
+        // if the user entered email includes "@cosmonetsolutions.com" then he wil be creator else client
+        const userEmail = email.includes(CONSTANT_VARIABLES.ROLE_DOMAIN)
+        if (userEmail) {
+            console.log("creator")
+            const sqlUpdate = `UPDATE user_info
+                SET role_name = 'creator'
+                WHERE email = '${email}';`
+            await queryExecutor(sqlUpdate)
+        } else {
+            console.log("client");
+            const sqlUpdate = `UPDATE user_info
+            SET role_name = 'client'
+            WHERE email = '${email}';`
+            await queryExecutor(sqlUpdate)
+        }
+
+
+        const userData = await auth0.database.signUp(data)
         return res.status(201).send({
             message: "An email sent to you.Please verify the email!",
             data: userData
         })
-
-        // async (err, userData) => {
-        //     if (err) {
-        //         console.log("🚀 ~ file: auth_controller.js:48 ~ auth0.database.signUp ~ err:", err)
-        //         return res.status(400).send({
-        //             data: JSON.parse(err.message),
-        //             message: "Please verify the email or User already exist!"
-        //         })
-        //     }
-
-        // }
-
-
     } catch (error) {
-        console.log("🚀 ~ file: auth_controller.js:27 ~ userSignup ~ error:", error)
+        console.log("🚀 ~ file: auth_controller.js:79 ~ userSignup ~ error:", error)
+
+        return res.send({
+            message: "Email or phone number already exist!"
+        })
 
     }
+
+
+    // async (err, userData) => {
+    //     if (err) {
+    //         console.log("🚀 ~ file: auth_controller.js:48 ~ auth0.database.signUp ~ err:", err)
+    //         return res.status(400).send({
+    //             data: JSON.parse(err.message),
+    //             message: "Please verify the email or User already exist!"
+    //         })
+    //     }
+
+    // }
+
+
+
 }
 
 const userLogin = async (req, res, next) => {
     try {
-        const { email, password, email_verified } = req.body;
+        const { email, password } = req.body;
 
         // const auth = new AuthenticationClient({
         //     domain: "dev-j7x42d7nyiq4nuhu.us.auth0.com",
@@ -100,44 +124,43 @@ const userLogin = async (req, res, next) => {
         //     clientSecret:
         //         "ifdj7BqlydoSI5kpZsfKAY-49p3w7_eDYOxQ3hL3eM-vmZN_14cdSVfJOVZfy-Ee",
         // });
-        if (email_verified === "true") {
 
 
-            // update isEmailVerified to true
-            const sqlUpdate = `UPDATE user_info
-            SET isEmailVerified = true
-            WHERE email = '${email}'`;
-            const updateResponse = await queryExecutor(sqlUpdate)
+        // update isEmailVerified to true
+        // const sqlUpdate = `UPDATE user_info
+        // SET isEmailVerified = true
+        // WHERE email = '${email}'`;
+        // const updateResponse = await queryExecutor(sqlUpdate)
 
-            var data = {
-                client_id: "6Mz5dqxyCOKSWe0Y1nfir81k7i62xNku", // Optional field.
-                username: email,
-                password: password,
-                realm: "testdb", // Optional field.
-                // scope: 'openid'  // Optional field.
-            };
+        var data = {
+            client_id: CONSTANT_VARIABLES.AUTH0_CLIENTID, // Optional field.
+            username: email,
+            password: password,
+            realm: CONSTANT_VARIABLES.CONNECTION, // Optional field.
+            // scope: 'openid'  // Optional field.
+        };
 
-            auth0.oauth.passwordGrant(data, function (err, userData) {
-                if (err) {
-                    // Handle error.
-                    console.log("error-----", err);
-                    return res.status(403).send({
-                        error: JSON.parse(err.message),
+        auth0.oauth.passwordGrant(data, function (err, userData) {
+            if (err) {
+                // Handle error.
+                console.log("error-----", err);
+                return res.status(403).send({
+                    error: JSON.parse(err.message),
 
-                    })
-                }
-
-                console.log(userData);
-                return res.send({
-                    data: userData,
-                    message: "login successful"
                 })
-            });
-        } else {
-            return res.send({
-                message: "Please verify the email sent to you!"
+            }
+
+            console.log(userData);
+            return res.status(200).send({
+                data: userData,
+                message: "login successful"
             })
-        }
+        });
+
+        // return res.send({
+        //     message: "Please verify the email sent to you!"
+        // })
+
 
     } catch (error) {
         console.log("🚀 ~ file: auth_controller.js:101 ~ userLogin ~ error:", error)
@@ -148,6 +171,7 @@ const userLogin = async (req, res, next) => {
 const forgotPassword = async (req, res, next) => {
     try {
         const { email } = req.body
+        console.log("🚀 ~ file: auth_controller.js:150 ~ forgotPassword ~ email:", email)
 
         // check if the email is exist and verified
 
@@ -156,15 +180,14 @@ const forgotPassword = async (req, res, next) => {
         if (searchResponse.length > 0) {
             var options = {
                 method: "POST",
-                url: "https://dev-egjru2hga63r6c55.us.auth0.com/dbconnections/change_password",
+                url: CONSTANT_VARIABLES.FORGOT_PASSWORD_URL,
                 headers: { "Content-Type": "application/json" },
                 data: {
-                    client_id: "6Mz5dqxyCOKSWe0Y1nfir81k7i62xNku",
-                    email: "rashmi.kr@dollarbirdinc.com",
-                    connection: "testdb",
+                    client_id: CONSTANT_VARIABLES.AUTH0_CLIENTID,
+                    email: email,
+                    connection: CONSTANT_VARIABLES.CONNECTION,
                 },
             };
-
 
             axios
                 .request(options)
@@ -181,15 +204,12 @@ const forgotPassword = async (req, res, next) => {
                         message: "Internal server error"
                     })
                 });
-        } else {
+        }
+        else {
             return res.status(404).send({
                 message: "Please enter valid email id"
             })
         }
-
-
-
-
 
     } catch (error) {
         console.log("🚀 ~ file: auth_controller.js:182 ~ forgotPassword ~ error:", error)
