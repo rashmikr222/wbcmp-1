@@ -5,6 +5,7 @@ const { queryExecutor, SQLQUERYSTRING } = require('../utils/common')
 const { CONSTANT_VARIABLES } = require('../config/config')
 var request = require("request");
 
+// console.log("==", CONSTANT_VARIABLES.AUTH0_DOMAIN, CONSTANT_VARIABLES.AUTH0_CLIENTSECRET, CONSTANT_VARIABLES.AUTH0_CLIENTID)
 
 var AuthenticationClient = require('auth0').AuthenticationClient
 

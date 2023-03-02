@@ -1,4 +1,4 @@
-const mysql = require('mysql');
+const mysql = require('mysql2');
 const { CONSTANT_VARIABLES } = require('../config/config') //for importing variables from .env files
 
 console.log("host:", CONSTANT_VARIABLES.HOST,

@@ -25,25 +25,22 @@ describe("Api signup", () => {      //npm i mocha, chai, should= chai.should()
         console.log("Before each test case.."); //Will execute before each test case.
     });
 
-    // it("Sample test", () => {
-    //     let a = 10;
-    //     let b = 10;
-    //     expect(a).to.be.equal(b);
-    //     a.should.equal(b);
-    // })
+
     // con.getConnection(function (err, connection) {
         it("test for happy case", (done) => {
             // this.timeout(0);
             const data = {
                 "fullName": "amarendra",
-                "email": "rashmi.kr211@dollarbirdinc.com",
-                "phoneNumber": 92123456781,
+                "email": "rashmi2.kr@yahoo.com",
+                "phoneNumber": 835677810,
                 "password":"Rashmi@22!"
             }
             chai.request(app).post('/api/signup').send(data).end((error, response) => {
                 response.should.have.status(201);
                 response.body.should.be.an('object');
-                response.body.should.have.keys("fullname", "email", "phoneNumber", "password");
+                response.body.should.have.keys("data", "message");
+                expect(response.body.message).to.equal("An email sent to you.Please verify the email!")
+                // response.body.should.have.keys("fullname", "email", "phoneNumber", "password");
                 done();
             })
         })
@@ -78,8 +75,8 @@ describe.skip("Api bad request", () => {      //npm i mocha, chai, should= chai.
     it("test for bad request case", (done) => {
         const data = {
             "fullName": "amarendra",
-            "email": "rashmi.kr@dollarbirdinc.com",
-            "phoneNumber": 9812345678,
+            "email": "rashmi1.kr@yahoo.com",
+            "phoneNumber": 835667810,
             "password":"Rashmi@22!"
         }
         chai.request(app).post('/api/signup').send(data).end((error, response) => {

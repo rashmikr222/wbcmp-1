@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "env-cmd -e DEVELOPMENT node src/index.js",
-    "test": "mocha './specs/*.spec.js' --timeout 100000"
+    "test": "mocha './specs/*.spec.js' --timeout 10000"
   },
   "keywords": [],
   "author": "",
@@ -29,7 +29,7 @@
     "jsonwebtoken": "^9.0.0",
     "jwks-rsa": "^3.0.1",
     "mocha": "^10.2.0",
-    "mysql": "^2.18.1",
+    "mysql2": "^3.1.2",
     "request": "^2.88.2",
     "swagger-ui-express": "^4.6.2",
     "yamljs": "^0.3.0",
